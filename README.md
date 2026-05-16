@@ -1,8 +1,8 @@
 # OpenWave
 
-OpenWave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 1: Foundation MVP** only.
+OpenWave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 2: Authentication**.
 
-## Phase 1 Scope
+## Phase 1 Foundation
 
 Included:
 
@@ -18,23 +18,39 @@ Included:
 - Clean folder architecture
 - GitHub Actions workflow for debug APK builds
 
-Not included yet:
+## Phase 2 Authentication
 
-- Firebase
-- Spotify login
+Included:
+
+- Firebase app bootstrap for Android
+- Firebase Authentication service behind an `AuthService` interface
+- Email/password login
+- Email/password registration
+- Google login
+- Riverpod auth state provider
+- Auth gate before the main app shell
+- Sign out action from Library
+
+Firebase credentials are configurable and are not committed as secrets.
+
+## Not Included Yet
+
 - Music playback
 - Offline downloads
 - AI recommendations
 - Cloud Functions
 - External music APIs
+- Spotify login
 
 ## Folder Structure
 
 ```text
 lib/
   core/
+    firebase/
     navigation/
   features/
+    auth/
     home/
     library/
     search/
@@ -45,6 +61,41 @@ lib/
   theme/
   widgets/
 ```
+
+## Firebase Setup
+
+1. Create a Firebase project.
+2. Add an Android app with package name:
+
+```text
+com.openwave.openwave
+```
+
+3. Enable Authentication providers in Firebase Console:
+
+- Email/Password
+- Google
+
+4. Add your debug SHA-1/SHA-256 fingerprints to the Firebase Android app:
+
+```powershell
+cd android
+.\gradlew signingReport
+```
+
+5. Build with your Firebase values:
+
+```powershell
+flutter build apk --debug `
+  --dart-define=FIREBASE_ANDROID_API_KEY="your-api-key" `
+  --dart-define=FIREBASE_ANDROID_APP_ID="your-android-app-id" `
+  --dart-define=FIREBASE_MESSAGING_SENDER_ID="your-sender-id" `
+  --dart-define=FIREBASE_PROJECT_ID="your-project-id" `
+  --dart-define=FIREBASE_STORAGE_BUCKET="your-project-id.appspot.com" `
+  --dart-define=GOOGLE_SERVER_CLIENT_ID="your-web-client-id.apps.googleusercontent.com"
+```
+
+For GitHub Actions production auth builds, store those values as repository secrets and pass them as `--dart-define` values in the workflow.
 
 ## Local Development
 
@@ -81,7 +132,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/openwave-v0.1-foundation-debug.apk
+dist/openwave-v0.2-auth-debug.apk
 ```
 
 ## GitHub Actions
@@ -96,13 +147,13 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 
 ## Versioning
 
-Suggested commit message:
+Latest tag:
 
 ```text
-feat: build OpenWave phase 1 foundation
+v0.2-auth
 ```
 
-Suggested tag:
+Previous tag:
 
 ```text
 v0.1-foundation

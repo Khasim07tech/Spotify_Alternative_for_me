@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/playlist.dart';
+import '../../providers/auth_providers.dart';
 import '../../providers/catalog_providers.dart';
 import '../../widgets/adaptive_page.dart';
 import '../../widgets/gradient_artwork.dart';
@@ -26,9 +27,11 @@ class LibraryScreen extends ConsumerWidget {
                 ),
               ),
               IconButton.filledTonal(
-                tooltip: 'Add',
-                onPressed: () {},
-                icon: const Icon(Icons.add_rounded),
+                tooltip: 'Sign out',
+                onPressed: () {
+                  ref.read(authServiceProvider).signOut();
+                },
+                icon: const Icon(Icons.logout_rounded),
               ),
             ],
           ),

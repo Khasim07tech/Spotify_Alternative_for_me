@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/navigation/app_shell.dart';
+import '../auth/auth_gate.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
         PageRouteBuilder<void>(
           transitionDuration: const Duration(milliseconds: 420),
           pageBuilder: (context, animation, secondaryAnimation) {
-            return const AppShell();
+            return const AuthGate();
           },
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

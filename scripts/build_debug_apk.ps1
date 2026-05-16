@@ -38,8 +38,8 @@ try {
   $apkPath = Join-Path $projectRoot "build/app/outputs/flutter-apk/app-debug.apk"
   $distDir = Join-Path $projectRoot "dist"
   New-Item -ItemType Directory -Force -Path $distDir | Out-Null
-  Copy-Item -Force $apkPath (Join-Path $distDir "openwave-v0.1-foundation-debug.apk")
-  Write-Host "APK generated: $distDir/openwave-v0.1-foundation-debug.apk"
+  Copy-Item -Force $apkPath (Join-Path $distDir "openwave-v0.2-auth-debug.apk")
+  Write-Host "APK generated: $distDir/openwave-v0.2-auth-debug.apk"
 } finally {
   Pop-Location
 }

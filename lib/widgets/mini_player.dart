@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 
-import '../providers/catalog_providers.dart';
+import '../features/player/full_player_screen.dart';
+import '../providers/player_providers.dart';
 import 'gradient_artwork.dart';
 
 class MiniPlayer extends ConsumerWidget {
@@ -9,8 +11,14 @@ class MiniPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final track = ref.watch(homeViewModelProvider).recentTracks.first;
+    final track = ref.watch(currentTrackProvider).value ??
+        ref.watch(playerServiceProvider).queue.first;
+    final playerState = ref.watch(playerStateProvider).value;
     final scheme = Theme.of(context).colorScheme;
+    final isPlaying = playerState?.playing ?? false;
+    final isBusy = playerState?.processingState == ProcessingState.loading ||
+        playerState?.processingState == ProcessingState.buffering;
+    final service = ref.watch(playerServiceProvider);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
@@ -19,17 +27,26 @@ class MiniPlayer extends ConsumerWidget {
         borderRadius: BorderRadius.circular(8),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const FullPlayerScreen(),
+              ),
+            );
+          },
           child: SizedBox(
             height: 62,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  GradientArtwork(
-                    color: Color(track.colorValue),
-                    size: 44,
-                    icon: Icons.waves,
+                  Hero(
+                    tag: 'artwork-${track.id}',
+                    child: GradientArtwork(
+                      color: Color(track.colorValue),
+                      size: 44,
+                      icon: Icons.waves,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -57,13 +74,26 @@ class MiniPlayer extends ConsumerWidget {
                   ),
                   IconButton(
                     tooltip: 'Previous',
-                    onPressed: null,
+                    onPressed: () {
+                      service.previous();
+                    },
                     icon: const Icon(Icons.skip_previous_rounded),
                   ),
                   IconButton.filled(
-                    tooltip: 'Play',
-                    onPressed: null,
-                    icon: const Icon(Icons.play_arrow_rounded),
+                    tooltip: isPlaying ? 'Pause' : 'Play',
+                    onPressed: () {
+                      service.togglePlayPause();
+                    },
+                    icon: isBusy
+                        ? const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(
+                            isPlaying
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                          ),
                   ),
                 ],
               ),

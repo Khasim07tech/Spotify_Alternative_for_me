@@ -1,6 +1,6 @@
 # OpenWave
 
-OpenWave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 2: Authentication**.
+OpenWave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 3: Music Player**.
 
 ## Phase 1 Foundation
 
@@ -33,9 +33,23 @@ Included:
 
 Firebase credentials are configurable and are not committed as secrets.
 
+## Phase 3 Music Player
+
+Included:
+
+- `just_audio` playback service
+- Background playback with `just_audio_background`
+- Android notification controls
+- Copyright-safe public-domain demo tracks
+- Tap-to-play from Home and Search
+- Live mini player controls
+- Full Now Playing screen
+- Seek bar, play/pause, previous/next, shuffle, and repeat controls
+
+The bundled demo streams are public-domain recordings sourced from Wikimedia Commons and Internet Archive metadata pages.
+
 ## Not Included Yet
 
-- Music playback
 - Offline downloads
 - AI recommendations
 - Cloud Functions
@@ -53,6 +67,7 @@ lib/
     auth/
     home/
     library/
+    player/
     search/
     splash/
   models/
@@ -132,7 +147,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/openwave-v0.2-auth-debug.apk
+dist/openwave-v0.3-player-debug.apk
 ```
 
 ## GitHub Actions
@@ -150,10 +165,16 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 Latest tag:
 
 ```text
+v0.3-player
+```
+
+Previous auth tag:
+
+```text
 v0.2-auth
 ```
 
-Previous tag:
+Previous foundation tag:
 
 ```text
 v0.1-foundation

@@ -4,9 +4,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$localFlutter = Join-Path $projectRoot ".tooling/flutter/bin/flutter.bat"
-$localSdk = Join-Path $projectRoot ".tooling/android-sdk"
-$localJdk = Get-ChildItem (Join-Path $projectRoot ".tooling") -Directory -ErrorAction SilentlyContinue |
+$shortProjectRoot = cmd /c "for %A in (""$projectRoot"") do @echo %~sA"
+$executionRoot = if ($shortProjectRoot) { $shortProjectRoot } else { $projectRoot }
+$localFlutter = Join-Path $executionRoot ".tooling/flutter/bin/flutter.bat"
+$localSdk = Join-Path $executionRoot ".tooling/android-sdk"
+$localJdk = Get-ChildItem (Join-Path $executionRoot ".tooling") -Directory -ErrorAction SilentlyContinue |
   Where-Object { $_.Name -like "jdk-*" } |
   Select-Object -First 1
 
@@ -26,7 +28,7 @@ if (Test-Path $localSdk) {
   $env:ANDROID_SDK_ROOT = $localSdk
 }
 
-Push-Location $projectRoot
+Push-Location $executionRoot
 try {
   & $flutter pub get
   if (-not $SkipChecks) {
@@ -35,11 +37,11 @@ try {
   }
   & $flutter build apk --debug
 
-  $apkPath = Join-Path $projectRoot "build/app/outputs/flutter-apk/app-debug.apk"
+  $apkPath = Join-Path $executionRoot "build/app/outputs/flutter-apk/app-debug.apk"
   $distDir = Join-Path $projectRoot "dist"
   New-Item -ItemType Directory -Force -Path $distDir | Out-Null
-  Copy-Item -Force $apkPath (Join-Path $distDir "openwave-v0.2-auth-debug.apk")
-  Write-Host "APK generated: $distDir/openwave-v0.2-auth-debug.apk"
+  Copy-Item -Force $apkPath (Join-Path $distDir "openwave-v0.3-player-debug.apk")
+  Write-Host "APK generated: $distDir/openwave-v0.3-player-debug.apk"
 } finally {
   Pop-Location
 }

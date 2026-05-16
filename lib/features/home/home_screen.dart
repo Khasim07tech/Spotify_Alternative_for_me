@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/catalog_providers.dart';
+import '../../providers/player_providers.dart';
 import '../../widgets/adaptive_page.dart';
 import '../../widgets/playlist_card.dart';
 import '../../widgets/section_header.dart';
@@ -13,6 +14,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(homeViewModelProvider);
+    final playerService = ref.watch(playerServiceProvider);
 
     return CustomScrollView(
       slivers: [
@@ -106,7 +108,14 @@ class HomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SectionHeader(title: 'Recently played'),
-                ...viewModel.recentTracks.map((track) => TrackTile(track: track)),
+                ...viewModel.recentTracks.map(
+                  (track) => TrackTile(
+                    track: track,
+                    onTap: () {
+                      playerService.playTrack(track);
+                    },
+                  ),
+                ),
               ],
             ),
           ),

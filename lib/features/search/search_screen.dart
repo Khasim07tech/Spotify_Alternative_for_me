@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/catalog_providers.dart';
+import '../../providers/player_providers.dart';
 import '../../widgets/adaptive_page.dart';
 import '../../widgets/search_input.dart';
 import '../../widgets/section_header.dart';
@@ -27,6 +28,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(searchViewModelProvider);
+    final playerService = ref.watch(playerServiceProvider);
     final normalizedQuery = _query.trim().toLowerCase();
     final results = normalizedQuery.isEmpty
         ? viewModel.searchableTracks
@@ -64,7 +66,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           SectionHeader(
             title: normalizedQuery.isEmpty ? 'Open picks' : 'Results',
           ),
-          for (final track in results) TrackTile(track: track),
+          for (final track in results)
+            TrackTile(
+              track: track,
+              onTap: () {
+                playerService.playTrack(track);
+              },
+            ),
           if (results.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 20),

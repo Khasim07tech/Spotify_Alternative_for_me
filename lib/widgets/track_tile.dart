@@ -7,9 +7,11 @@ class TrackTile extends StatelessWidget {
   const TrackTile({
     super.key,
     required this.track,
+    this.onTap,
   });
 
   final Track track;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class TrackTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () {},
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(

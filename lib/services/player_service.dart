@@ -117,8 +117,9 @@ class PlayerService {
   }
 
   AudioSource _sourceForTrack(Track track) {
+    final uri = Uri.parse(track.streamUrl);
     return AudioSource.uri(
-      Uri.parse(track.streamUrl),
+      uri,
       tag: MediaItem(
         id: track.id,
         album: track.collection,

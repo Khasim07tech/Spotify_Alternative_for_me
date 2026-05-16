@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/player/artist_screen.dart';
 import '../models/track.dart';
+import '../providers/download_providers.dart';
 import 'gradient_artwork.dart';
 
-class TrackTile extends StatelessWidget {
+class TrackTile extends ConsumerWidget {
   const TrackTile({
     super.key,
     required this.track,
     this.onTap,
+    this.showDownload = true,
   });
 
   final Track track;
   final VoidCallback? onTap;
+  final bool showDownload;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final progress = ref.watch(downloadProgressProvider).value ?? const {};
+    final downloaded = ref.watch(downloadedTracksProvider).value ?? const [];
+    final isDownloaded = downloaded.any((item) => item.id == track.id);
+    final activeProgress = progress[track.id];
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -71,6 +79,30 @@ class TrackTile extends StatelessWidget {
                 },
                 icon: const Icon(Icons.person_search_rounded),
               ),
+              if (showDownload)
+                IconButton(
+                  tooltip: isDownloaded ? 'Downloaded' : 'Download',
+                  onPressed: activeProgress == null || isDownloaded
+                      ? () {
+                          if (!isDownloaded) {
+                            ref.read(downloadControllerProvider.notifier).download(track);
+                          }
+                        }
+                      : null,
+                  icon: activeProgress == null
+                      ? Icon(
+                          isDownloaded
+                              ? Icons.offline_pin_rounded
+                              : Icons.download_rounded,
+                        )
+                      : SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value: activeProgress <= 0 ? null : activeProgress,
+                          ),
+                        ),
+                ),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'downloads_screen.dart';
 import '../../models/playlist.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/catalog_providers.dart';
@@ -46,6 +47,24 @@ class LibraryScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 28),
+          Material(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(8),
+            child: ListTile(
+              leading: const Icon(Icons.offline_bolt_rounded),
+              title: const Text('Downloaded songs'),
+              subtitle: const Text('Play cached legal tracks offline'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const DownloadsScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
           const SectionHeader(title: 'Saved playlists'),
           ...viewModel.playlists.map((playlist) {
             return _LibraryPlaylistTile(playlist: playlist);

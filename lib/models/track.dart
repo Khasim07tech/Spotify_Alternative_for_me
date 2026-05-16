@@ -20,4 +20,28 @@ class Track {
   final String streamUrl;
   final String sourceName;
   final String license;
+
+  Track copyWith({
+    String? id,
+    String? title,
+    String? artist,
+    String? collection,
+    Duration? duration,
+    int? colorValue,
+    String? streamUrl,
+    String? sourceName,
+    String? license,
+  }) {
+    return Track(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      artist: artist ?? this.artist,
+      collection: collection ?? this.collection,
+      duration: duration ?? this.duration,
+      colorValue: colorValue ?? this.colorValue,
+      streamUrl: streamUrl ?? this.streamUrl,
+      sourceName: sourceName ?? this.sourceName,
+      license: license ?? this.license,
+    );
+  }
 }

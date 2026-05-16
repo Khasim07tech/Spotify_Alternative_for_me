@@ -1,6 +1,6 @@
 # OpenWave
 
-KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 4: Streaming**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 5: Offline Downloads**.
 
 ## Phase 1 Foundation
 
@@ -64,9 +64,21 @@ Included:
 - Dynamic playback queue for streamed songs
 - Firebase placeholder fallback so invalid demo API keys no longer block app entry
 
+## Phase 5 Offline Downloads
+
+Included:
+
+- Legal streaming track downloads
+- Local app-document cache
+- Persistent download manifest
+- Download progress indicators
+- Downloaded songs screen
+- Offline playback from local file URIs
+- Secure per-install cache marker via platform secure storage
+- Low-memory streamed file writes
+
 ## Not Included Yet
 
-- Offline downloads
 - AI recommendations
 - Cloud Functions
 - Spotify login
@@ -171,7 +183,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/kx-wave-v0.4-streaming-debug.apk
+dist/kx-wave-v0.5-offline-downloads-debug.apk
 ```
 
 ## GitHub Actions
@@ -187,6 +199,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v0.5-offline-downloads
+```
+
+Previous streaming tag:
 
 ```text
 v0.4-streaming

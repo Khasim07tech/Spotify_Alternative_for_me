@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../features/player/artist_screen.dart';
 import '../models/track.dart';
 import 'gradient_artwork.dart';
 
@@ -58,6 +59,17 @@ class TrackTile extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
+              ),
+              IconButton(
+                tooltip: 'Artist',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => ArtistScreen(artist: track.artist),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.person_search_rounded),
               ),
             ],
           ),

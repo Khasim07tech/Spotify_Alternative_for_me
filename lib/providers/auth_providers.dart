@@ -1,11 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/firebase/firebase_bootstrap.dart';
 import '../models/auth_user.dart';
 import '../services/auth_service.dart';
 
 final authServiceProvider = Provider<AuthService>(
-  (ref) => FirebaseAuthService(),
+  (ref) {
+    if (!FirebaseBootstrap.isConfigured || !FirebaseBootstrap.isInitialized) {
+      return const DemoAuthService();
+    }
+    return FirebaseAuthService();
+  },
 );
 
 final authStateProvider = StreamProvider<AuthUser?>((ref) {

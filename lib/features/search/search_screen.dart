@@ -30,13 +30,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final viewModel = ref.watch(searchViewModelProvider);
     final playerService = ref.watch(playerServiceProvider);
     final normalizedQuery = _query.trim().toLowerCase();
-    final results = normalizedQuery.isEmpty
-        ? viewModel.searchableTracks
-        : viewModel.searchableTracks.where((track) {
-            return track.title.toLowerCase().contains(normalizedQuery) ||
-                track.artist.toLowerCase().contains(normalizedQuery) ||
-                track.collection.toLowerCase().contains(normalizedQuery);
-          }).toList();
+    final results = ref.watch(streamingSearchProvider(_query));
 
     return AdaptivePage(
       child: ListView(
@@ -63,26 +57,31 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ],
           ),
           const SizedBox(height: 28),
-          SectionHeader(
-            title: normalizedQuery.isEmpty ? 'Open picks' : 'Results',
-          ),
-          for (final track in results)
-            TrackTile(
-              track: track,
-              onTap: () {
-                playerService.playTrack(track);
-              },
+          SectionHeader(title: normalizedQuery.isEmpty ? 'Trending' : 'Results'),
+          results.when(
+            data: (tracks) => Column(
+              children: [
+                for (final track in tracks)
+                  TrackTile(
+                    track: track,
+                    onTap: () => playerService.playTrack(track),
+                  ),
+              ],
             ),
-          if (results.isEmpty)
-            Padding(
+            loading: () => const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: LinearProgressIndicator(),
+            ),
+            error: (error, stackTrace) => Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Text(
-                'No matches in this foundation catalog.',
+                'Streaming search is unavailable. Try again.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
+          ),
         ],
       ),
     );

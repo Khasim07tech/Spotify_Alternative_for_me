@@ -9,7 +9,7 @@ class OpenWaveApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'OpenWave',
+      title: 'KX Wave',
       debugShowCheckedModeBanner: false,
       theme: OpenWaveTheme.dark(),
       themeMode: ThemeMode.dark,

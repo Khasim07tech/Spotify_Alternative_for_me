@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class OpenWaveTheme {
   const OpenWaveTheme._();
 
-  static const _green = Color(0xFF1ED760);
-  static const _aqua = Color(0xFF22D3EE);
-  static const _background = Color(0xFF080A0F);
-  static const _surface = Color(0xFF10131A);
-  static const _surfaceHigh = Color(0xFF171B24);
+  static const _green = Color(0xFF00F5FF);
+  static const _aqua = Color(0xFF7CFFFB);
+  static const _background = Color(0xFF05070B);
+  static const _surface = Color(0xFF0B1018);
+  static const _surfaceHigh = Color(0xFF121A25);
   static const _text = Color(0xFFF8FAFC);
   static const _mutedText = Color(0xFFB7C0CC);
 

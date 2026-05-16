@@ -1,6 +1,6 @@
 # OpenWave
 
-OpenWave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 3: Music Player**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 4: Streaming**.
 
 ## Phase 1 Foundation
 
@@ -48,12 +48,27 @@ Included:
 
 The bundled demo streams are public-domain recordings sourced from Wikimedia Commons and Internet Archive metadata pages.
 
+## Phase 4 Streaming
+
+Included:
+
+- KX Wave futuristic cyber-tech branding
+- Neon cyan and premium dark UI accents
+- Adaptive Android KX icon
+- Audius API trending and search integration
+- Jamendo API integration through `JAMENDO_CLIENT_ID`
+- Streaming search loading/error states
+- Streaming trending songs
+- Artist detail pages
+- Playlist detail pages
+- Dynamic playback queue for streamed songs
+- Firebase placeholder fallback so invalid demo API keys no longer block app entry
+
 ## Not Included Yet
 
 - Offline downloads
 - AI recommendations
 - Cloud Functions
-- External music APIs
 - Spotify login
 
 ## Folder Structure
@@ -112,6 +127,15 @@ flutter build apk --debug `
 
 For GitHub Actions production auth builds, store those values as repository secrets and pass them as `--dart-define` values in the workflow.
 
+## Streaming API Setup
+
+Audius works without a key. Jamendo requires a free developer client id:
+
+```powershell
+flutter build apk --debug `
+  --dart-define=JAMENDO_CLIENT_ID="your-jamendo-client-id"
+```
+
 ## Local Development
 
 Use Flutter 3.41.9 or newer stable.
@@ -147,7 +171,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/openwave-v0.3-player-debug.apk
+dist/kx-wave-v0.4-streaming-debug.apk
 ```
 
 ## GitHub Actions
@@ -163,6 +187,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v0.4-streaming
+```
+
+Previous player tag:
 
 ```text
 v0.3-player

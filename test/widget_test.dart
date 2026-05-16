@@ -23,12 +23,12 @@ void main() {
       ),
     );
 
-    expect(find.text('OpenWave'), findsOneWidget);
+    expect(find.text('KX Wave'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1200));
     await tester.pumpAndSettle();
 
-    expect(find.text('Good evening'), findsOneWidget);
+    expect(find.text('KX Wave'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Search'), findsOneWidget);
     expect(find.text('Library'), findsOneWidget);

@@ -3,10 +3,51 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/playlist.dart';
 import '../models/track.dart';
 import '../services/catalog_service.dart';
+import '../services/streaming_service.dart';
 
 final catalogServiceProvider = Provider<CatalogService>(
   (ref) => const MockCatalogService(),
 );
+
+final streamingServiceProvider = Provider<StreamingService>(
+  (ref) => const OpenMusicStreamingService(),
+);
+
+final trendingTracksProvider = FutureProvider<List<Track>>((ref) async {
+  final service = ref.watch(streamingServiceProvider);
+  final tracks = await service.trendingTracks();
+  if (tracks.isEmpty) {
+    return ref.watch(catalogServiceProvider).recentTracks();
+  }
+  return tracks;
+});
+
+final streamingSearchProvider =
+    FutureProvider.family<List<Track>, String>((ref, query) async {
+  final service = ref.watch(streamingServiceProvider);
+  final tracks = await service.searchTracks(query);
+  if (tracks.isEmpty) {
+    final fallback = ref.watch(catalogServiceProvider).recentTracks();
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      return fallback;
+    }
+    return fallback.where((track) {
+      return track.title.toLowerCase().contains(normalized) ||
+          track.artist.toLowerCase().contains(normalized) ||
+          track.collection.toLowerCase().contains(normalized);
+    }).toList();
+  }
+  return tracks;
+});
+
+final featuredStreamingPlaylistsProvider = FutureProvider<List<Playlist>>((ref) async {
+  final playlists = await ref.watch(streamingServiceProvider).featuredPlaylists();
+  if (playlists.isEmpty) {
+    return ref.watch(catalogServiceProvider).trendingPlaylists();
+  }
+  return playlists;
+});
 
 final homeViewModelProvider = Provider<HomeViewModel>((ref) {
   final catalog = ref.watch(catalogServiceProvider);

@@ -82,21 +82,37 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.waves_rounded,
-                    color: Colors.black,
-                    size: 56,
-                  ),
+                  child: const Center(child: _KxMark(size: 42)),
                 ),
                 const SizedBox(height: 22),
                 Text(
-                  'OpenWave',
+                  'KX Wave',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _KxMark extends StatelessWidget {
+  const _KxMark({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'KX',
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: size,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 0,
+        fontStyle: FontStyle.italic,
       ),
     );
   }

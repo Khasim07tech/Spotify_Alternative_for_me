@@ -22,11 +22,24 @@ class MiniPlayer extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-      child: Material(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 280),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            if (isPlaying)
+              BoxShadow(
+                color: scheme.primary.withValues(alpha: 0.28),
+                blurRadius: 24,
+                spreadRadius: 1,
+              ),
+          ],
+        ),
+        child: Material(
+          color: scheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute<void>(
@@ -98,6 +111,7 @@ class MiniPlayer extends ConsumerWidget {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),

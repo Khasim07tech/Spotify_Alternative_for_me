@@ -5,7 +5,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import '../models/track.dart';
 
 class PlayerService {
-  PlayerService({required List<Track> queue}) : _queue = queue;
+  PlayerService({required List<Track> queue}) : _queue = List.of(queue);
 
   final List<Track> _queue;
   final AudioPlayer _player = AudioPlayer();
@@ -40,9 +40,11 @@ class PlayerService {
 
   Future<void> playTrack(Track track) async {
     await initialize();
-    final index = _queue.indexWhere((candidate) => candidate.id == track.id);
+    var index = _queue.indexWhere((candidate) => candidate.id == track.id);
     if (index == -1) {
-      return;
+      _queue.add(track);
+      await _player.addAudioSource(_sourceForTrack(track));
+      index = _queue.length - 1;
     }
     await _player.seek(Duration.zero, index: index);
     await _player.play();

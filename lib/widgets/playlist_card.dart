@@ -8,10 +8,12 @@ class PlaylistCard extends StatelessWidget {
     super.key,
     required this.playlist,
     this.compact = false,
+    this.onTap,
   });
 
   final Playlist playlist;
   final bool compact;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +23,24 @@ class PlaylistCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: playlist.title,
-      child: Material(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {},
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.14),
+              blurRadius: 20,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+          onTap: onTap,
           child: SizedBox(
             width: width,
             child: Padding(
@@ -65,6 +79,7 @@ class PlaylistCard extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),

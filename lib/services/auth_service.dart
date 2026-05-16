@@ -126,3 +126,38 @@ class AuthException implements Exception {
   @override
   String toString() => message;
 }
+
+class DemoAuthService implements AuthService {
+  const DemoAuthService();
+
+  static const _demoUser = AuthUser(
+    uid: 'local-demo-user',
+    email: 'demo@kxwave.local',
+    displayName: 'KX Listener',
+  );
+
+  @override
+  Stream<AuthUser?> authStateChanges() => Stream.value(_demoUser);
+
+  @override
+  Future<AuthUser> registerWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    return AuthUser(uid: 'local-demo-user', email: email.trim());
+  }
+
+  @override
+  Future<AuthUser> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    return AuthUser(uid: 'local-demo-user', email: email.trim());
+  }
+
+  @override
+  Future<AuthUser> signInWithGoogle() async => _demoUser;
+
+  @override
+  Future<void> signOut() async {}
+}

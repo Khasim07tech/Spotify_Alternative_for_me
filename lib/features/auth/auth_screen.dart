@@ -50,16 +50,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
-                          Icons.waves_rounded,
+                          Icons.electric_bolt_rounded,
                           color: Colors.black,
-                          size: 44,
+                          size: 42,
                         ),
                       ),
                     ),
                     const SizedBox(height: 26),
                     Text(
                       formState.isRegistering
-                          ? 'Create your OpenWave account'
+                          ? 'Create your KX Wave account'
                           : 'Welcome back',
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),

@@ -82,7 +82,11 @@ class OpenMusicStreamingService implements StreamingService {
       if (data is! List) {
         return const <Track>[];
       }
-      return data.whereType<Map<String, Object?>>().map(_audiusTrack).toList();
+      return data
+          .whereType<Map<String, Object?>>()
+          .where((track) => track['is_streamable'] != false)
+          .map(_audiusTrack)
+          .toList();
     });
   }
 
@@ -97,7 +101,11 @@ class OpenMusicStreamingService implements StreamingService {
       if (data is! List) {
         return const <Track>[];
       }
-      return data.whereType<Map<String, Object?>>().map(_audiusTrack).toList();
+      return data
+          .whereType<Map<String, Object?>>()
+          .where((track) => track['is_streamable'] != false)
+          .map(_audiusTrack)
+          .toList();
     });
   }
 
@@ -148,6 +156,10 @@ class OpenMusicStreamingService implements StreamingService {
         ? _string(user['name'], fallback: 'Audius Artist')
         : 'Audius Artist';
     final duration = Duration(seconds: _int(json['duration'], fallback: 180));
+    final stream = json['stream'];
+    final directStreamUrl = stream is Map<String, Object?>
+        ? _string(stream['url'])
+        : '';
     return Track(
       id: 'audius-$id',
       title: title,
@@ -155,7 +167,9 @@ class OpenMusicStreamingService implements StreamingService {
       collection: 'Audius Trending',
       duration: duration,
       colorValue: 0xFF00F5FF,
-      streamUrl: 'https://api.audius.co/v1/tracks/$id/stream?app_name=$_appName',
+      streamUrl: directStreamUrl.isNotEmpty
+          ? directStreamUrl
+          : 'https://api.audius.co/v1/tracks/$id/stream?app_name=$_appName',
       sourceName: 'Audius',
       license: 'Open streaming',
     );

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/home/home_screen.dart';
 import '../../features/library/library_screen.dart';
+import '../../features/recommendations/recommendations_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../providers/navigation_provider.dart';
 import '../../widgets/mini_player.dart';
@@ -13,6 +14,7 @@ class AppShell extends ConsumerWidget {
   static const _screens = <Widget>[
     HomeScreen(),
     SearchScreen(),
+    RecommendationsScreen(),
     LibraryScreen(),
   ];
 
@@ -72,6 +74,11 @@ class AppShell extends ConsumerWidget {
                   icon: Icon(Icons.search),
                   selectedIcon: Icon(Icons.search_rounded),
                   label: 'Search',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.auto_awesome_outlined),
+                  selectedIcon: Icon(Icons.auto_awesome_rounded),
+                  label: 'AI',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.library_music_outlined),

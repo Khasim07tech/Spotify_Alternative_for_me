@@ -1,6 +1,6 @@
 # OpenWave
 
-KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 6: Spotify Sync**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 7: AI Recommendations**.
 
 ## Phase 1 Foundation
 
@@ -89,9 +89,20 @@ Included:
 - Cached taste profile display
 - Spotify analytics only; Spotify music is never streamed by KX Wave
 
+## Phase 7 AI Recommendations
+
+Included:
+
+- AI Discovery bottom navigation tab
+- Weekly recommendation mix
+- Mood playlists
+- Similar artist signals
+- Spotify taste profile ranking when synced
+- Open-catalog fallback recommendations when Spotify is not configured
+- Recommendation playback from legal/open tracks only
+
 ## Not Included Yet
 
-- AI recommendations
 - Cloud Functions
 
 ## Folder Structure
@@ -107,6 +118,7 @@ lib/
     library/
     spotify/
     player/
+    recommendations/
     search/
     splash/
   models/
@@ -213,7 +225,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/kx-wave-v0.6-spotify-sync-debug.apk
+dist/kx-wave-v0.7-ai-recommendations-debug.apk
 ```
 
 ## GitHub Actions
@@ -229,6 +241,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v0.7-ai-recommendations
+```
+
+Previous Spotify sync tag:
 
 ```text
 v0.6-spotify-sync

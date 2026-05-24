@@ -1,6 +1,6 @@
 # OpenWave
 
-KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 5: Offline Downloads**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 6: Spotify Sync**.
 
 ## Phase 1 Foundation
 
@@ -77,11 +77,22 @@ Included:
 - Secure per-install cache marker via platform secure storage
 - Low-memory streamed file writes
 
+## Phase 6 Spotify Sync
+
+Included:
+
+- Spotify OAuth with PKCE
+- Android callback URI: `kxwave://spotify-auth`
+- Secure token storage
+- Top tracks, top artists, genres, playlists, and recently played sync
+- Firestore taste profile storage when Firebase is configured
+- Cached taste profile display
+- Spotify analytics only; Spotify music is never streamed by KX Wave
+
 ## Not Included Yet
 
 - AI recommendations
 - Cloud Functions
-- Spotify login
 
 ## Folder Structure
 
@@ -94,6 +105,7 @@ lib/
     auth/
     home/
     library/
+    spotify/
     player/
     search/
     splash/
@@ -148,6 +160,24 @@ flutter build apk --debug `
   --dart-define=JAMENDO_CLIENT_ID="your-jamendo-client-id"
 ```
 
+## Spotify Sync Setup
+
+Create a Spotify developer app and add this redirect URI:
+
+```text
+kxwave://spotify-auth
+```
+
+Build or run with:
+
+```powershell
+flutter build apk --debug `
+  --dart-define=SPOTIFY_CLIENT_ID="your-spotify-client-id" `
+  --dart-define=SPOTIFY_REDIRECT_URI="kxwave://spotify-auth"
+```
+
+KX Wave uses Spotify only to analyze listening taste. Playback still comes from legal/open sources already integrated in the app.
+
 ## Local Development
 
 Use Flutter 3.41.9 or newer stable.
@@ -183,7 +213,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/kx-wave-v0.5-offline-downloads-debug.apk
+dist/kx-wave-v0.6-spotify-sync-debug.apk
 ```
 
 ## GitHub Actions
@@ -199,6 +229,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v0.6-spotify-sync
+```
+
+Previous offline-downloads tag:
 
 ```text
 v0.5-offline-downloads

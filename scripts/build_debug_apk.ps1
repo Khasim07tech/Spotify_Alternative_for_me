@@ -40,8 +40,8 @@ try {
   $apkPath = Join-Path $executionRoot "build/app/outputs/flutter-apk/app-debug.apk"
   $distDir = Join-Path $projectRoot "dist"
   New-Item -ItemType Directory -Force -Path $distDir | Out-Null
-  Copy-Item -Force $apkPath (Join-Path $distDir "kx-wave-v0.5-offline-downloads-debug.apk")
-  Write-Host "APK generated: $distDir/kx-wave-v0.5-offline-downloads-debug.apk"
+  Copy-Item -Force $apkPath (Join-Path $distDir "kx-wave-v0.6-spotify-sync-debug.apk")
+  Write-Host "APK generated: $distDir/kx-wave-v0.6-spotify-sync-debug.apk"
 } finally {
   Pop-Location
 }

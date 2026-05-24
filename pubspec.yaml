@@ -2,13 +2,16 @@ name: openwave
 description: "OpenWave Android music streaming app built incrementally."
 publish_to: 'none'
 
-version: 0.5.0+5
+version: 0.6.0+6
 
 environment:
   sdk: ^3.11.5
 
 dependencies:
+  app_links: ^7.0.0
   audio_session: ^0.2.3
+  cloud_firestore: ^6.4.1
+  crypto: ^3.0.7
   firebase_auth: ^6.5.1
   firebase_core: ^4.9.0
   flutter:
@@ -21,6 +24,7 @@ dependencies:
   just_audio_background: ^0.0.1-beta.17
   path_provider: ^2.1.5
   shared_preferences: ^2.5.5
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

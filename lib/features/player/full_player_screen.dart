@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../models/track.dart';
+import '../../providers/lyrics_providers.dart';
 import '../../providers/player_providers.dart';
 import '../../widgets/gradient_artwork.dart';
 
@@ -18,6 +19,7 @@ class FullPlayerScreen extends ConsumerWidget {
     final duration = ref.watch(playbackDurationProvider).value ?? track.duration;
     final shuffleEnabled = ref.watch(shuffleEnabledProvider).value ?? false;
     final repeatMode = ref.watch(repeatModeProvider).value ?? LoopMode.off;
+    final lyrics = ref.watch(currentLyricsProvider);
     final isPlaying = playerState?.playing ?? false;
     final isBusy = playerState?.processingState == ProcessingState.loading ||
         playerState?.processingState == ProcessingState.buffering;
@@ -41,6 +43,7 @@ class FullPlayerScreen extends ConsumerWidget {
                 isBusy: isBusy,
                 shuffleEnabled: shuffleEnabled,
                 repeatMode: repeatMode,
+                lyrics: lyrics,
                 onSeek: (position) {
                   service.seek(position);
                 },
@@ -118,6 +121,7 @@ class _ControlsPanel extends StatelessWidget {
     required this.isBusy,
     required this.shuffleEnabled,
     required this.repeatMode,
+    required this.lyrics,
     required this.onSeek,
     required this.onPrevious,
     required this.onTogglePlay,
@@ -133,6 +137,7 @@ class _ControlsPanel extends StatelessWidget {
   final bool isBusy;
   final bool shuffleEnabled;
   final LoopMode repeatMode;
+  final List<String> lyrics;
   final ValueChanged<Duration> onSeek;
   final VoidCallback onPrevious;
   final VoidCallback onTogglePlay;
@@ -238,6 +243,27 @@ class _ControlsPanel extends StatelessWidget {
                 repeatMode == LoopMode.one ? Icons.repeat_one_rounded : Icons.repeat_rounded,
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: EdgeInsets.zero,
+          initiallyExpanded: false,
+          title: const Text('Lyrics'),
+          subtitle: const Text('Open-source notes when lyrics are unavailable'),
+          children: [
+            for (final line in lyrics)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  line,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
           ],
         ),
       ],

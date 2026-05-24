@@ -16,21 +16,30 @@ abstract interface class StreamingService {
 }
 
 class OpenMusicStreamingService implements StreamingService {
-  const OpenMusicStreamingService({http.Client? client}) : _client = client;
+  OpenMusicStreamingService({http.Client? client}) : _client = client;
 
   static const _appName = 'KXWave';
   static const _jamendoClientId = String.fromEnvironment('JAMENDO_CLIENT_ID');
   final http.Client? _client;
+  final Map<String, List<Track>> _trackCache = {};
+  List<Playlist>? _playlistCache;
 
   http.Client get _http => _client ?? http.Client();
 
   @override
   Future<List<Track>> trendingTracks() async {
+    final cached = _trackCache['trending'];
+    if (cached != null) {
+      return cached;
+    }
     final audius = await _fetchAudiusTrending();
     if (audius.isNotEmpty) {
+      _trackCache['trending'] = audius;
       return audius;
     }
-    return _fetchJamendo('electronic');
+    final jamendo = await _fetchJamendo('electronic');
+    _trackCache['trending'] = jamendo;
+    return jamendo;
   }
 
   @override
@@ -39,11 +48,18 @@ class OpenMusicStreamingService implements StreamingService {
     if (trimmed.isEmpty) {
       return trendingTracks();
     }
+    final cacheKey = 'search:${trimmed.toLowerCase()}';
+    final cached = _trackCache[cacheKey];
+    if (cached != null) {
+      return cached;
+    }
     final results = <Track>[
       ...await _fetchAudiusSearch(trimmed),
       ...await _fetchJamendo(trimmed),
     ];
-    return _dedupe(results);
+    final deduped = _dedupe(results);
+    _trackCache[cacheKey] = deduped;
+    return deduped;
   }
 
   @override
@@ -53,8 +69,12 @@ class OpenMusicStreamingService implements StreamingService {
 
   @override
   Future<List<Playlist>> featuredPlaylists() async {
+    final cached = _playlistCache;
+    if (cached != null) {
+      return cached;
+    }
     final tracks = await trendingTracks();
-    return [
+    _playlistCache = [
       Playlist(
         id: 'kx-trending',
         title: 'KX Trending',
@@ -70,6 +90,7 @@ class OpenMusicStreamingService implements StreamingService {
         colorValue: 0xFFC0C7D2,
       ),
     ];
+    return _playlistCache!;
   }
 
   Future<List<Track>> _fetchAudiusTrending() async {

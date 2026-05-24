@@ -10,7 +10,7 @@ final catalogServiceProvider = Provider<CatalogService>(
 );
 
 final streamingServiceProvider = Provider<StreamingService>(
-  (ref) => const OpenMusicStreamingService(),
+  (ref) => OpenMusicStreamingService(),
 );
 
 final trendingTracksProvider = FutureProvider<List<Track>>((ref) async {

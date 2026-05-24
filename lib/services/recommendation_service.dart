@@ -9,6 +9,7 @@ class RecommendationService {
     required List<Track> candidates,
     required SpotifyProfile? spotifyProfile,
     required List<Track> recentlyPlayed,
+    List<DateTime> previousRefreshes = const [],
   }) {
     final scored = candidates
         .map(
@@ -26,6 +27,10 @@ class RecommendationService {
     final weeklyTracks = scored.map((item) => item.track).take(20).toList();
     final seedTracks = weeklyTracks.isEmpty ? candidates : weeklyTracks;
     final generatedAt = DateTime.now();
+    final refreshHistory = [
+      generatedAt,
+      ...previousRefreshes,
+    ].take(8).toList();
 
     return RecommendationPack(
       weeklyTracks: weeklyTracks,
@@ -57,6 +62,8 @@ class RecommendationService {
       ],
       similarArtists: _similarArtists(spotifyProfile, candidates),
       generatedAt: generatedAt,
+      nextRefreshAt: generatedAt.add(const Duration(days: 7)),
+      refreshHistory: refreshHistory,
       basis: spotifyProfile == null
           ? 'Open catalog and in-app listening history'
           : 'Spotify taste profile and open catalog matching',

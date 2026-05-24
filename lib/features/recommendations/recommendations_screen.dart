@@ -16,10 +16,11 @@ class RecommendationsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pack = ref.watch(recommendationPackProvider);
+    final updateMessage = ref.watch(recommendationUpdateControllerProvider);
     return AdaptivePage(
       child: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(recommendationPackProvider);
+          ref.read(recommendationUpdateControllerProvider.notifier).refreshNow();
           await ref.read(recommendationPackProvider.future);
         },
         child: ListView(
@@ -30,11 +31,15 @@ class RecommendationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Personalized from your taste profile and legal open music sources.',
+              'Weekly personalized updates from your taste profile and legal open music sources.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
+            if (updateMessage != null) ...[
+              const SizedBox(height: 12),
+              _RefreshNotice(message: updateMessage),
+            ],
             const SizedBox(height: 22),
             pack.when(
               data: (value) => _RecommendationContent(pack: value),
@@ -76,20 +81,33 @@ class _RecommendationContent extends ConsumerWidget {
               Text('Weekly KX Mix', style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 8),
               Text(
-                pack.basis,
+                '${pack.basis}. Next auto refresh: ${_formatDate(pack.nextRefreshAt)}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
               ),
               const SizedBox(height: 14),
-              FilledButton.icon(
-                onPressed: pack.weeklyTracks.isEmpty
-                    ? null
-                    : () {
-                        ref.read(playerServiceProvider).playTrack(pack.weeklyTracks.first);
-                      },
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: const Text('Play discovery'),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  FilledButton.icon(
+                    onPressed: pack.weeklyTracks.isEmpty
+                        ? null
+                        : () {
+                            ref.read(playerServiceProvider).playTrack(pack.weeklyTracks.first);
+                          },
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text('Play discovery'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      ref.read(recommendationUpdateControllerProvider.notifier).refreshNow();
+                    },
+                    icon: const Icon(Icons.update_rounded),
+                    label: const Text('Refresh now'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -134,7 +152,53 @@ class _RecommendationContent extends ConsumerWidget {
                 .toList(),
           ),
         ],
+        if (pack.refreshHistory.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          const SectionHeader(title: 'Refresh history'),
+          const SizedBox(height: 8),
+          ...pack.refreshHistory.take(4).map(
+                (date) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.notifications_active_rounded),
+                  title: Text(_formatDate(date)),
+                  subtitle: const Text('Weekly recommendation update'),
+                ),
+              ),
+        ],
       ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final local = date.toLocal();
+    final month = local.month.toString().padLeft(2, '0');
+    final day = local.day.toString().padLeft(2, '0');
+    return '${local.year}-$month-$day';
+  }
+}
+
+class _RefreshNotice extends StatelessWidget {
+  const _RefreshNotice({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: scheme.primary.withValues(alpha: 0.24)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.notifications_active_rounded, color: scheme.primary),
+          const SizedBox(width: 10),
+          Expanded(child: Text(message)),
+        ],
+      ),
     );
   }
 }

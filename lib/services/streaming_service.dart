@@ -85,6 +85,7 @@ class OpenMusicStreamingService implements StreamingService {
       return data
           .whereType<Map<String, Object?>>()
           .where((track) => track['is_streamable'] != false)
+          .where(_hasOpenLicense)
           .map(_audiusTrack)
           .toList();
     });
@@ -104,6 +105,7 @@ class OpenMusicStreamingService implements StreamingService {
       return data
           .whereType<Map<String, Object?>>()
           .where((track) => track['is_streamable'] != false)
+          .where(_hasOpenLicense)
           .map(_audiusTrack)
           .toList();
     });
@@ -156,10 +158,7 @@ class OpenMusicStreamingService implements StreamingService {
         ? _string(user['name'], fallback: 'Audius Artist')
         : 'Audius Artist';
     final duration = Duration(seconds: _int(json['duration'], fallback: 180));
-    final stream = json['stream'];
-    final directStreamUrl = stream is Map<String, Object?>
-        ? _string(stream['url'])
-        : '';
+    final license = _string(json['license'], fallback: 'Open Audius streaming');
     return Track(
       id: 'audius-$id',
       title: title,
@@ -167,11 +166,9 @@ class OpenMusicStreamingService implements StreamingService {
       collection: 'Audius Trending',
       duration: duration,
       colorValue: 0xFF00F5FF,
-      streamUrl: directStreamUrl.isNotEmpty
-          ? directStreamUrl
-          : 'https://api.audius.co/v1/tracks/$id/stream?app_name=$_appName',
+      streamUrl: 'https://api.audius.co/v1/tracks/$id/stream?app_name=$_appName',
       sourceName: 'Audius',
-      license: 'Open streaming',
+      license: license,
     );
   }
 
@@ -205,5 +202,16 @@ class OpenMusicStreamingService implements StreamingService {
 
   int _int(Object? value, {required int fallback}) {
     return int.tryParse(value?.toString() ?? '') ?? fallback;
+  }
+
+  bool _hasOpenLicense(Map<String, Object?> track) {
+    final license = _string(track['license']).toLowerCase();
+    if (license.isEmpty || license.contains('all rights reserved')) {
+      return false;
+    }
+    return license.contains('creative commons') ||
+        license.contains('cc') ||
+        license.contains('public domain') ||
+        license.contains('open');
   }
 }

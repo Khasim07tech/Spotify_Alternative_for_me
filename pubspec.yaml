@@ -2,7 +2,7 @@ name: openwave
 description: "OpenWave Android music streaming app built incrementally."
 publish_to: 'none'
 
-version: 0.7.0+7
+version: 0.8.0+8
 
 environment:
   sdk: ^3.11.5

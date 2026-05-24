@@ -1,6 +1,6 @@
 # OpenWave
 
-KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 7: AI Recommendations**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 8: Weekly Updates**.
 
 ## Phase 1 Foundation
 
@@ -101,9 +101,22 @@ Included:
 - Open-catalog fallback recommendations when Spotify is not configured
 - Recommendation playback from legal/open tracks only
 
+## Phase 8 Weekly Updates
+
+Included:
+
+- Weekly recommendation refresh schedule
+- Cached recommendation packs to reduce API usage
+- Manual refresh from the AI Discovery screen
+- Refresh history
+- Notification-style in-app update status
+- Safer playable fallback catalog for low-connectivity devices
+- Conservative Audius filtering for copyright-safe/open-license tracks
+- Optional Firebase scheduled function source in `functions/`
+
 ## Not Included Yet
 
-- Cloud Functions
+- Production release signing
 
 ## Folder Structure
 
@@ -225,7 +238,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/kx-wave-v0.7-ai-recommendations-debug.apk
+dist/kx-wave-v0.8-weekly-updates-debug.apk
 ```
 
 ## GitHub Actions
@@ -241,6 +254,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v0.8-weekly-updates
+```
+
+Previous AI recommendations tag:
 
 ```text
 v0.7-ai-recommendations

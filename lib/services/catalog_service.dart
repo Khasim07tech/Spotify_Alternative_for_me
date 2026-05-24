@@ -81,8 +81,8 @@ class MockCatalogService implements CatalogService {
           duration: Duration(minutes: 2, seconds: 40),
           colorValue: 0xFF1ED760,
           streamUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/transcoded/0/06/W.C._Handy_-Ole_miss_rag_1917.ogg/W.C._Handy_-Ole_miss_rag_1917.ogg.mp3',
-          sourceName: 'Wikimedia Commons',
+              'https://archive.org/download/1917-USA-Archives-1917-00-00-WC-Handys-Orch-Ole-Miss-Rag-Fox-Rag/1917%20%28USA%29%20Archives%201917%2000%2000%20W.C.%20Handy%27s%20Orch%20-%20Ole%20Miss%20Rag%20%28Fox%20Rag%29.mp3',
+          sourceName: 'Internet Archive',
           license: 'Public domain',
         ),
         Track(
@@ -92,7 +92,8 @@ class MockCatalogService implements CatalogService {
           collection: 'City Pulse',
           duration: Duration(minutes: 4, seconds: 19),
           colorValue: 0xFF22D3EE,
-          streamUrl: 'https://archive.org/download/EDIS-SRP-0197-05/EDIS-SRP-0197-05.mp3',
+          streamUrl:
+              'https://archive.org/download/78_william-tell-overture-part-2-the-storm_royal-albert-hall-orchestra/D_167_Ho_978ac.mp3',
           sourceName: 'Internet Archive',
           license: 'Public domain',
         ),
@@ -104,8 +105,8 @@ class MockCatalogService implements CatalogService {
           duration: Duration(minutes: 2, seconds: 24),
           colorValue: 0xFFA78BFA,
           streamUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0e/Dippermouth_Blues_-_KING_OLIVER%27S_JAZZ_BAND.flac/Dippermouth_Blues_-_KING_OLIVER%27S_JAZZ_BAND.flac.mp3',
-          sourceName: 'Wikimedia Commons',
+              'https://archive.org/download/78_dipper-mouth-blues_muggsy-spanier-and-his-ragtime-band-oliver-armstrong_gbia0393571b/DIPPER%20MOUTH%20BLUES%20-%20MUGGSY%20SPANIER%20AND%20HIS%20RAGTIME%20BAND.mp3',
+          sourceName: 'Internet Archive',
           license: 'Public domain',
         ),
         Track(
@@ -115,9 +116,8 @@ class MockCatalogService implements CatalogService {
           collection: 'Soft Static',
           duration: Duration(minutes: 9, seconds: 26),
           colorValue: 0xFFF97316,
-          streamUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/transcoded/b/ba/Rhapsody_in_Blue_-_Original_1924_Recording.opus/Rhapsody_in_Blue_-_Original_1924_Recording.opus.mp3',
-          sourceName: 'Wikimedia Commons',
+          streamUrl: 'https://archive.org/download/edison-52145_01_18010/cusb_ed_52145_01_18010_0b.mp3',
+          sourceName: 'Internet Archive',
           license: 'Public domain',
         ),
       ];

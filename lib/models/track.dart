@@ -44,4 +44,34 @@ class Track {
       license: license ?? this.license,
     );
   }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'artist': artist,
+      'collection': collection,
+      'durationMs': duration.inMilliseconds,
+      'colorValue': colorValue,
+      'streamUrl': streamUrl,
+      'sourceName': sourceName,
+      'license': license,
+    };
+  }
+
+  factory Track.fromJson(Map<String, Object?> json) {
+    return Track(
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? 'Unknown track',
+      artist: json['artist']?.toString() ?? 'Unknown artist',
+      collection: json['collection']?.toString() ?? 'KX Wave',
+      duration: Duration(
+        milliseconds: int.tryParse(json['durationMs']?.toString() ?? '') ?? 0,
+      ),
+      colorValue: int.tryParse(json['colorValue']?.toString() ?? '') ?? 0xFF00F5FF,
+      streamUrl: json['streamUrl']?.toString() ?? '',
+      sourceName: json['sourceName']?.toString() ?? 'Open source',
+      license: json['license']?.toString() ?? 'Open music',
+    );
+  }
 }

@@ -12,11 +12,7 @@ $localJdk = Get-ChildItem (Join-Path $executionRoot ".tooling") -Directory -Erro
   Where-Object { $_.Name -like "jdk-*" } |
   Select-Object -First 1
 
-if (Test-Path $localFlutter) {
-  $flutter = $localFlutter
-} else {
-  $flutter = "flutter"
-}
+$flutter = if (Test-Path $localFlutter) { $localFlutter } else { "flutter" }
 
 if ($localJdk) {
   $env:JAVA_HOME = $localJdk.FullName
@@ -35,13 +31,17 @@ try {
     & $flutter analyze
     & $flutter test
   }
-  & $flutter build apk --debug
+  & $flutter build apk --release
+  & $flutter build appbundle --release
 
-  $apkPath = Join-Path $executionRoot "build/app/outputs/flutter-apk/app-debug.apk"
   $distDir = Join-Path $projectRoot "dist"
   New-Item -ItemType Directory -Force -Path $distDir | Out-Null
-  Copy-Item -Force $apkPath (Join-Path $distDir "kx-wave-v1.0-production-debug.apk")
-  Write-Host "APK generated: $distDir/kx-wave-v1.0-production-debug.apk"
+  Copy-Item -Force (Join-Path $executionRoot "build/app/outputs/flutter-apk/app-release.apk") `
+    (Join-Path $distDir "kx-wave-v1.0-production-release.apk")
+  Copy-Item -Force (Join-Path $executionRoot "build/app/outputs/bundle/release/app-release.aab") `
+    (Join-Path $distDir "kx-wave-v1.0-production-release.aab")
+  Write-Host "Release APK: $distDir/kx-wave-v1.0-production-release.apk"
+  Write-Host "Release AAB: $distDir/kx-wave-v1.0-production-release.aab"
 } finally {
   Pop-Location
 }

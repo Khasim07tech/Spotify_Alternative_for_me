@@ -1,6 +1,6 @@
 # OpenWave
 
-KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **Phase 9: Optimization**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **v1.0 Production**.
 
 ## Phase 1 Foundation
 
@@ -125,9 +125,22 @@ Included:
 - Reduced repeat network calls for trending/search/playlists
 - Continued source-error hardening for legal/open playback
 
+## v1.0 Production
+
+Included:
+
+- Signed release APK build configuration
+- Release AAB build configuration
+- Local upload-keystore generation script
+- GitHub Actions support for signed release artifacts
+- Firebase Firestore and Storage rules
+- Production release guide
+- Changelog
+- Debug APK still available for direct installation testing
+
 ## Not Included Yet
 
-- Production release signing
+- Play Store publishing automation
 
 ## Folder Structure
 
@@ -249,7 +262,28 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/kx-wave-v0.9-optimization-debug.apk
+dist/kx-wave-v1.0-production-debug.apk
+```
+
+## Build Release APK and AAB
+
+Create a local signing key:
+
+```powershell
+.\scripts\create_release_keystore.ps1
+```
+
+Build release artifacts:
+
+```powershell
+.\scripts\build_release_artifacts.ps1
+```
+
+Outputs:
+
+```text
+dist/kx-wave-v1.0-production-release.apk
+dist/kx-wave-v1.0-production-release.aab
 ```
 
 ## GitHub Actions
@@ -265,6 +299,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v1.0-production
+```
+
+Previous optimization tag:
 
 ```text
 v0.9-optimization

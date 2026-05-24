@@ -95,6 +95,36 @@ class DownloadService {
     await _writeManifest(manifest);
   }
 
+  Future<Track> importLocalAudio(File sourceFile) async {
+    await _ensureCacheKey();
+    if (!await sourceFile.exists()) {
+      throw const DownloadException('Selected audio file no longer exists.');
+    }
+    final directory = await _downloadDirectory();
+    final name = sourceFile.uri.pathSegments.isEmpty
+        ? 'Local audio'
+        : Uri.decodeComponent(sourceFile.uri.pathSegments.last);
+    final id = 'local-${DateTime.now().microsecondsSinceEpoch}';
+    final extension = _extensionFor(name);
+    final destination = File('${directory.path}/${_safeFileName(id)}$extension');
+    await sourceFile.copy(destination.path);
+    final track = Track(
+      id: id,
+      title: _titleFor(name),
+      artist: 'Local file',
+      collection: 'Imported audio',
+      duration: Duration.zero,
+      colorValue: 0xFF00F5FF,
+      streamUrl: destination.uri.toString(),
+      sourceName: 'Device library',
+      license: 'User imported local audio',
+    );
+    final manifest = await _readManifest();
+    manifest.add(_trackToJson(track, destination.path));
+    await _writeManifest(manifest);
+    return track;
+  }
+
   Future<Directory> _downloadDirectory() async {
     final base = await getApplicationDocumentsDirectory();
     final directory = Directory('${base.path}/kx_wave_downloads');
@@ -168,6 +198,21 @@ class DownloadService {
 
   String _safeFileName(String value) {
     return value.replaceAll(RegExp('[^a-zA-Z0-9_-]'), '_');
+  }
+
+  String _extensionFor(String value) {
+    final lower = value.toLowerCase();
+    for (final extension in const ['.mp3', '.m4a', '.aac', '.wav', '.ogg', '.flac']) {
+      if (lower.endsWith(extension)) {
+        return extension;
+      }
+    }
+    return '.mp3';
+  }
+
+  String _titleFor(String value) {
+    final withoutExtension = value.replaceFirst(RegExp(r'\.[^.]+$'), '');
+    return withoutExtension.trim().isEmpty ? 'Local audio' : withoutExtension.trim();
   }
 
   void _setProgress(String trackId, double value) {

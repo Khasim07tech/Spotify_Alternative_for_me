@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -10,6 +12,7 @@ class PlayerService {
   final List<Track> _queue;
   final AudioPlayer _player = AudioPlayer();
   Future<void>? _initialization;
+  final StreamController<String?> _errorController = StreamController<String?>.broadcast();
 
   AudioPlayer get player => _player;
 
@@ -24,6 +27,8 @@ class PlayerService {
   Stream<bool> get shuffleModeEnabledStream => _player.shuffleModeEnabledStream;
 
   Stream<LoopMode> get loopModeStream => _player.loopModeStream;
+
+  Stream<String?> get errorStream => _errorController.stream;
 
   Stream<Track?> get currentTrackStream {
     return _player.currentIndexStream.map((index) {
@@ -43,11 +48,24 @@ class PlayerService {
     var index = _queue.indexWhere((candidate) => candidate.id == track.id);
     if (index == -1) {
       _queue.add(track);
-      await _player.addAudioSource(_sourceForTrack(track));
       index = _queue.length - 1;
     }
-    await _player.seek(Duration.zero, index: index);
-    await _player.play();
+    try {
+      _errorController.add(null);
+      await _player.setAudioSources(
+        _queue.map(_sourceForTrack).toList(growable: false),
+        initialIndex: index,
+        initialPosition: Duration.zero,
+        preload: true,
+      );
+      await _player.play();
+    } on PlayerException catch (error) {
+      _errorController.add(error.message ?? 'This audio source could not be played.');
+    } on PlayerInterruptedException {
+      _errorController.add('Playback was interrupted. Try again.');
+    } catch (_) {
+      _errorController.add('This song could not be played. Try another track.');
+    }
   }
 
   Future<void> togglePlayPause() async {
@@ -101,6 +119,7 @@ class PlayerService {
   }
 
   Future<void> dispose() async {
+    await _errorController.close();
     await _player.dispose();
   }
 
@@ -120,6 +139,9 @@ class PlayerService {
     final uri = Uri.parse(track.streamUrl);
     return AudioSource.uri(
       uri,
+      headers: uri.scheme.startsWith('http')
+          ? const {'User-Agent': 'KXWave/0.7 Android'}
+          : null,
       tag: MediaItem(
         id: track.id,
         album: track.collection,

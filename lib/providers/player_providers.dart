@@ -35,3 +35,7 @@ final shuffleEnabledProvider = StreamProvider<bool>((ref) {
 final repeatModeProvider = StreamProvider<LoopMode>((ref) {
   return ref.watch(playerServiceProvider).loopModeStream;
 });
+
+final playbackErrorProvider = StreamProvider<String?>((ref) {
+  return ref.watch(playerServiceProvider).errorStream;
+});

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +20,16 @@ class DownloadsScreen extends ConsumerWidget {
     final error = ref.watch(downloadControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Downloaded Songs')),
+      appBar: AppBar(
+        title: const Text('Downloaded Songs'),
+        actions: [
+          IconButton(
+            tooltip: 'Import audio',
+            onPressed: () => _importAudio(ref),
+            icon: const Icon(Icons.library_add_rounded),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: AdaptivePage(
           child: ListView(
@@ -65,5 +77,18 @@ class DownloadsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _importAudio(WidgetRef ref) async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['mp3', 'm4a', 'aac', 'wav', 'ogg', 'flac'],
+      allowMultiple: false,
+    );
+    final path = result?.files.single.path;
+    if (path == null || path.isEmpty) {
+      return;
+    }
+    await ref.read(downloadControllerProvider.notifier).importLocalAudio(File(path));
   }
 }

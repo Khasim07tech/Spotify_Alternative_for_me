@@ -6,6 +6,7 @@ import '../../features/library/library_screen.dart';
 import '../../features/recommendations/recommendations_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../providers/navigation_provider.dart';
+import '../../providers/player_providers.dart';
 import '../../widgets/mini_player.dart';
 
 class AppShell extends ConsumerWidget {
@@ -21,6 +22,15 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(selectedTabProvider);
+    ref.listen(playbackErrorProvider, (previous, next) {
+      final message = next.value;
+      if (message == null || message.isEmpty) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    });
 
     return Scaffold(
       body: SafeArea(

@@ -36,13 +36,36 @@ class SpotifyService {
 
   bool get isConfigured => _clientId.isNotEmpty;
 
+  SpotifyProfile demoProfile() {
+    return SpotifyProfile(
+      topTracks: const [
+        'Ole Miss Rag - W. C. Handy',
+        'KX City Pulse - Local demo',
+        'KX Midnight Blues - Local demo',
+      ],
+      topArtists: const [
+        'W. C. Handy',
+        "Sodero's Band",
+        "King Oliver's Jazz Band",
+      ],
+      genres: const ['ragtime', 'jazz', 'instrumental', 'focus'],
+      playlists: const ['KX Focus Signal', 'KX Pulse Drive'],
+      recentTracks: const ['KX Neon Rag', 'KX Blue Rhapsody'],
+      syncedAt: DateTime.now(),
+    );
+  }
+
   Future<bool> hasSession() async {
     return (await _storage.read(key: _refreshTokenKey)) != null ||
         (await _storage.read(key: _accessTokenKey)) != null;
   }
 
   Future<void> launchAuthorization() async {
-    _ensureConfigured();
+    if (!isConfigured) {
+      final profile = demoProfile();
+      await _storage.write(key: _cachedProfileKey, value: jsonEncode(profile.toJson()));
+      return;
+    }
     final verifier = _generateVerifier();
     await _storage.write(key: _verifierKey, value: verifier);
     final challenge = _codeChallenge(verifier);
@@ -106,7 +129,12 @@ class SpotifyService {
   }
 
   Future<SpotifyProfile> syncProfile() async {
-    _ensureConfigured();
+    if (!isConfigured) {
+      final profile = demoProfile();
+      await _storage.write(key: _cachedProfileKey, value: jsonEncode(profile.toJson()));
+      await _storeProfileInFirestore(profile);
+      return profile;
+    }
     final token = await _validAccessToken();
     final results = await Future.wait([
       _get(token, '/me/top/tracks', {'limit': '10', 'time_range': 'medium_term'}),

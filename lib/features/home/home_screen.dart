@@ -38,7 +38,13 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Notifications',
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('KX updates are active. Weekly mixes refresh in AI.'),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.notifications_none_rounded),
                     ),
                   ],

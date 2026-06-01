@@ -2,7 +2,7 @@ name: openwave
 description: "OpenWave Android music streaming app built incrementally."
 publish_to: 'none'
 
-version: 1.0.0+10
+version: 1.0.1+11
 
 environment:
   sdk: ^3.11.5
@@ -35,3 +35,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/audio/

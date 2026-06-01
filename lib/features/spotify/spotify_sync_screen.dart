@@ -62,6 +62,7 @@ class _SpotifySyncScreenState extends ConsumerState<SpotifySyncScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(spotifySyncProvider);
     final controller = ref.read(spotifySyncProvider.notifier);
+    final spotifyConfigured = ref.watch(spotifyServiceProvider).isConfigured;
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -113,6 +114,13 @@ class _SpotifySyncScreenState extends ConsumerState<SpotifySyncScreen> {
               ),
             ),
             const SizedBox(height: 18),
+            if (!spotifyConfigured)
+              _StatusBanner(
+                message:
+                    'Demo mode is active. Build with SPOTIFY_CLIENT_ID to connect a real Spotify account.',
+                color: scheme.primary.withValues(alpha: 0.14),
+                borderColor: scheme.primary,
+              ),
             if (state.errorMessage != null)
               _StatusBanner(
                 message: state.errorMessage!,
@@ -141,7 +149,7 @@ class _SpotifySyncScreenState extends ConsumerState<SpotifySyncScreen> {
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : controller.startLogin,
                   icon: const Icon(Icons.login_rounded),
-                  label: const Text('Open Spotify Login'),
+                  label: Text(spotifyConfigured ? 'Open Spotify Login' : 'Load Demo Taste'),
                 ),
                 OutlinedButton.icon(
                   onPressed: state.isLoading

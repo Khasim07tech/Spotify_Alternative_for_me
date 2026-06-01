@@ -52,9 +52,15 @@ class SpotifySyncNotifier extends Notifier<SpotifySyncState> {
     await _run(
       () async {
         await ref.read(spotifyServiceProvider).launchAuthorization();
-        return state.copyWith(
-          message: 'Spotify opened. Paste the code from the redirect URL to finish.',
-        );
+        final service = ref.read(spotifyServiceProvider);
+        if (!service.isConfigured) {
+          final profile = await service.cachedProfile();
+          return state.copyWith(
+            profile: profile,
+            message: 'Demo taste profile loaded. Add SPOTIFY_CLIENT_ID for real Spotify OAuth.',
+          );
+        }
+        return state.copyWith(message: 'Spotify opened. Paste the code from the redirect URL.');
       },
     );
   }
@@ -79,7 +85,9 @@ class SpotifySyncNotifier extends Notifier<SpotifySyncState> {
         final profile = await ref.read(spotifyServiceProvider).syncProfile();
         return state.copyWith(
           profile: profile,
-          message: 'Spotify taste profile synced.',
+          message: ref.read(spotifyServiceProvider).isConfigured
+              ? 'Spotify taste profile synced.'
+              : 'Demo taste profile synced. Add SPOTIFY_CLIENT_ID for real Spotify data.',
         );
       },
     );

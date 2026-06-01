@@ -69,36 +69,57 @@ class PlayerService {
   }
 
   Future<void> togglePlayPause() async {
-    await initialize();
-    if (_player.playing) {
-      await _player.pause();
-    } else {
-      await _player.play();
+    try {
+      _errorController.add(null);
+      await initialize();
+      if (_player.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } on PlayerException catch (error) {
+      _errorController.add(error.message ?? 'Playback could not start.');
+    } on PlayerInterruptedException {
+      _errorController.add('Playback was interrupted. Try again.');
+    } catch (_) {
+      _errorController.add('Playback could not start. Try another track.');
     }
   }
 
   Future<void> seek(Duration position) async {
-    await initialize();
-    await _player.seek(position);
+    try {
+      await initialize();
+      await _player.seek(position);
+    } catch (_) {
+      _errorController.add('Could not seek in this track.');
+    }
   }
 
   Future<void> next() async {
-    await initialize();
-    if (_player.hasNext) {
-      await _player.seekToNext();
-      await _player.play();
+    try {
+      await initialize();
+      if (_player.hasNext) {
+        await _player.seekToNext();
+        await _player.play();
+      }
+    } catch (_) {
+      _errorController.add('Could not play the next track.');
     }
   }
 
   Future<void> previous() async {
-    await initialize();
-    if (_player.position > const Duration(seconds: 3)) {
-      await _player.seek(Duration.zero);
-      return;
-    }
-    if (_player.hasPrevious) {
-      await _player.seekToPrevious();
-      await _player.play();
+    try {
+      await initialize();
+      if (_player.position > const Duration(seconds: 3)) {
+        await _player.seek(Duration.zero);
+        return;
+      }
+      if (_player.hasPrevious) {
+        await _player.seekToPrevious();
+        await _player.play();
+      }
+    } catch (_) {
+      _errorController.add('Could not play the previous track.');
     }
   }
 
@@ -137,22 +158,32 @@ class PlayerService {
 
   AudioSource _sourceForTrack(Track track) {
     final uri = Uri.parse(track.streamUrl);
+    if (uri.scheme == 'asset') {
+      return AudioSource.asset(
+        uri.path.startsWith('/') ? uri.path.substring(1) : uri.path,
+        tag: _mediaItemFor(track),
+      );
+    }
     return AudioSource.uri(
       uri,
       headers: uri.scheme.startsWith('http')
           ? const {'User-Agent': 'KXWave/0.7 Android'}
           : null,
-      tag: MediaItem(
-        id: track.id,
-        album: track.collection,
-        title: track.title,
-        artist: track.artist,
-        duration: track.duration,
-        extras: {
-          'source': track.sourceName,
-          'license': track.license,
-        },
-      ),
+      tag: _mediaItemFor(track),
+    );
+  }
+
+  MediaItem _mediaItemFor(Track track) {
+    return MediaItem(
+      id: track.id,
+      album: track.collection,
+      title: track.title,
+      artist: track.artist,
+      duration: track.duration,
+      extras: {
+        'source': track.sourceName,
+        'license': track.license,
+      },
     );
   }
 }

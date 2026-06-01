@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'downloads_screen.dart';
 import '../spotify/spotify_sync_screen.dart';
+import '../player/playlist_screen.dart';
 import '../../models/playlist.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/catalog_providers.dart';
@@ -10,12 +11,22 @@ import '../../widgets/adaptive_page.dart';
 import '../../widgets/gradient_artwork.dart';
 import '../../widgets/section_header.dart';
 
-class LibraryScreen extends ConsumerWidget {
+class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LibraryScreen> createState() => _LibraryScreenState();
+}
+
+enum _LibraryFilter { playlists, artists, albums }
+
+class _LibraryScreenState extends ConsumerState<LibraryScreen> {
+  _LibraryFilter _filter = _LibraryFilter.playlists;
+
+  @override
+  Widget build(BuildContext context) {
     final viewModel = ref.watch(libraryViewModelProvider);
+    final tracks = ref.watch(catalogServiceProvider).recentTracks();
 
     return AdaptivePage(
       child: ListView(
@@ -41,10 +52,22 @@ class LibraryScreen extends ConsumerWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: const [
-              _FilterChip(label: 'Playlists', selected: true),
-              _FilterChip(label: 'Artists'),
-              _FilterChip(label: 'Albums'),
+            children: [
+              _FilterChip(
+                label: 'Playlists',
+                selected: _filter == _LibraryFilter.playlists,
+                onSelected: () => setState(() => _filter = _LibraryFilter.playlists),
+              ),
+              _FilterChip(
+                label: 'Artists',
+                selected: _filter == _LibraryFilter.artists,
+                onSelected: () => setState(() => _filter = _LibraryFilter.artists),
+              ),
+              _FilterChip(
+                label: 'Albums',
+                selected: _filter == _LibraryFilter.albums,
+                onSelected: () => setState(() => _filter = _LibraryFilter.albums),
+              ),
             ],
           ),
           const SizedBox(height: 28),
@@ -84,10 +107,28 @@ class LibraryScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const SectionHeader(title: 'Saved playlists'),
-          ...viewModel.playlists.map((playlist) {
-            return _LibraryPlaylistTile(playlist: playlist);
-          }),
+          if (_filter == _LibraryFilter.playlists) ...[
+            const SectionHeader(title: 'Saved playlists'),
+            ...viewModel.playlists.map((playlist) {
+              return _LibraryPlaylistTile(playlist: playlist);
+            }),
+          ] else if (_filter == _LibraryFilter.artists) ...[
+            const SectionHeader(title: 'Artists'),
+            ...tracks.map((track) => _LibraryInfoTile(
+                  title: track.artist,
+                  subtitle: '${track.collection} - ${track.sourceName}',
+                  icon: Icons.person_rounded,
+                  colorValue: track.colorValue,
+                )),
+          ] else ...[
+            const SectionHeader(title: 'Albums'),
+            ...tracks.map((track) => _LibraryInfoTile(
+                  title: track.collection,
+                  subtitle: '${track.title} - ${track.artist}',
+                  icon: Icons.album_rounded,
+                  colorValue: track.colorValue,
+                )),
+          ],
         ],
       ),
     );
@@ -97,18 +138,21 @@ class LibraryScreen extends ConsumerWidget {
 class _FilterChip extends StatelessWidget {
   const _FilterChip({
     required this.label,
+    required this.onSelected,
     this.selected = false,
   });
 
   final String label;
+  final VoidCallback onSelected;
   final bool selected;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Chip(
+    return ActionChip(
       label: Text(label),
+      onPressed: onSelected,
       backgroundColor:
           selected ? scheme.primary.withValues(alpha: 0.18) : scheme.surfaceContainerHighest,
       side: BorderSide(
@@ -119,6 +163,56 @@ class _FilterChip extends StatelessWidget {
         color: selected ? scheme.primary : scheme.onSurfaceVariant,
         fontWeight: FontWeight.w700,
         letterSpacing: 0,
+      ),
+    );
+  }
+}
+
+class _LibraryInfoTile extends StatelessWidget {
+  const _LibraryInfoTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.colorValue,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final int colorValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 9),
+      child: Row(
+        children: [
+          GradientArtwork(color: Color(colorValue), size: 56, icon: icon),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -137,7 +231,13 @@ class _LibraryPlaylistTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (context) => PlaylistScreen(playlist: playlist),
+            ),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 9),
           child: Row(

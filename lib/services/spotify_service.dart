@@ -21,7 +21,7 @@ class SpotifyService {
   static const _clientId = String.fromEnvironment('SPOTIFY_CLIENT_ID');
   static const _redirectUri = String.fromEnvironment(
     'SPOTIFY_REDIRECT_URI',
-    defaultValue: 'kxwave://spotify-auth',
+    defaultValue: 'https://kxwave.app/spotify-auth',
   );
   static const _authBaseUrl = 'https://accounts.spotify.com';
   static const _apiBaseUrl = 'https://api.spotify.com/v1';
@@ -98,16 +98,18 @@ class SpotifyService {
       throw const SpotifyException('Start Spotify login before entering a code.');
     }
 
-    final response = await _client.post(
-      Uri.parse('$_authBaseUrl/api/token'),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'grant_type': 'authorization_code',
-        'code': code.trim(),
-        'redirect_uri': _redirectUri,
-        'client_id': _clientId,
-        'code_verifier': verifier,
-      },
+    final response = await _sendWithRetry(
+      () => _client.post(
+        Uri.parse('$_authBaseUrl/api/token'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {
+          'grant_type': 'authorization_code',
+          'code': code.trim(),
+          'redirect_uri': _redirectUri,
+          'client_id': _clientId,
+          'code_verifier': verifier,
+        },
+      ),
     );
     final body = _decodeObject(response);
     if (response.statusCode >= 400) {
@@ -126,6 +128,11 @@ class SpotifyService {
       return null;
     }
     return SpotifyProfile.fromJson(decoded);
+  }
+
+  Future<void> saveImportedProfile(SpotifyProfile profile) async {
+    await _storage.write(key: _cachedProfileKey, value: jsonEncode(profile.toJson()));
+    await _storeProfileInFirestore(profile);
   }
 
   Future<SpotifyProfile> syncProfile() async {
@@ -178,9 +185,11 @@ class SpotifyService {
     String path,
     Map<String, String> queryParameters,
   ) async {
-    final response = await _client.get(
-      Uri.parse('$_apiBaseUrl$path').replace(queryParameters: queryParameters),
-      headers: {'Authorization': 'Bearer $token'},
+    final response = await _sendWithRetry(
+      () => _client.get(
+        Uri.parse('$_apiBaseUrl$path').replace(queryParameters: queryParameters),
+        headers: {'Authorization': 'Bearer $token'},
+      ),
     );
     final body = _decodeObject(response);
     if (response.statusCode >= 400) {
@@ -204,14 +213,16 @@ class SpotifyService {
     if (refreshToken == null) {
       throw const SpotifyException('Connect Spotify before syncing.');
     }
-    final response = await _client.post(
-      Uri.parse('$_authBaseUrl/api/token'),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'grant_type': 'refresh_token',
-        'refresh_token': refreshToken,
-        'client_id': _clientId,
-      },
+    final response = await _sendWithRetry(
+      () => _client.post(
+        Uri.parse('$_authBaseUrl/api/token'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {
+          'grant_type': 'refresh_token',
+          'refresh_token': refreshToken,
+          'client_id': _clientId,
+        },
+      ),
     );
     final body = _decodeObject(response);
     if (response.statusCode >= 400) {
@@ -259,6 +270,24 @@ class SpotifyService {
       return decoded;
     }
     return {'error_description': 'Unexpected Spotify response.'};
+  }
+
+  Future<http.Response> _sendWithRetry(
+    Future<http.Response> Function() request,
+  ) async {
+    var delay = const Duration(milliseconds: 600);
+    for (var attempt = 0; attempt < 3; attempt++) {
+      final response = await request().timeout(const Duration(seconds: 15));
+      if (response.statusCode != 429 || attempt == 2) {
+        return response;
+      }
+      final retryAfter = int.tryParse(response.headers['retry-after'] ?? '');
+      await Future<void>.delayed(
+        retryAfter == null ? delay : Duration(seconds: retryAfter),
+      );
+      delay *= 2;
+    }
+    return request().timeout(const Duration(seconds: 15));
   }
 
   String _errorMessage(Map<String, Object?> body, String fallback) {

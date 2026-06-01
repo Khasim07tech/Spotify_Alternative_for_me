@@ -1,10 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/spotify_profile.dart';
+import '../services/spotify_import_service.dart';
 import '../services/spotify_service.dart';
 
 final spotifyServiceProvider = Provider<SpotifyService>((ref) {
   return SpotifyService();
+});
+
+final spotifyImportServiceProvider = Provider<SpotifyImportService>((ref) {
+  return const SpotifyImportService();
 });
 
 final spotifySyncProvider = NotifierProvider<SpotifySyncNotifier, SpotifySyncState>(
@@ -102,6 +109,20 @@ class SpotifySyncNotifier extends Notifier<SpotifySyncState> {
     );
   }
 
+  Future<void> importFile(File file) async {
+    await _run(
+      () async {
+        final profile = await ref.read(spotifyImportServiceProvider).importFile(file);
+        await ref.read(spotifyServiceProvider).saveImportedProfile(profile);
+        return state.copyWith(
+          profile: profile,
+          message:
+              'Imported ${profile.topTracks.length} tracks and ${profile.topArtists.length} artists.',
+        );
+      },
+    );
+  }
+
   Future<void> _loadCachedProfile() async {
     final profile = await ref.read(spotifyServiceProvider).cachedProfile();
     if (profile != null) {
@@ -123,6 +144,9 @@ class SpotifySyncNotifier extends Notifier<SpotifySyncState> {
 
   String _friendlyMessage(Object error) {
     if (error is SpotifyException) {
+      return error.message;
+    }
+    if (error is SpotifyImportException) {
       return error.message;
     }
     return 'Spotify sync failed. Check your connection and setup.';

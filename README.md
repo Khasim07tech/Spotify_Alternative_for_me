@@ -1,6 +1,6 @@
 # OpenWave
 
-KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **v1.0.1 QA Fix**.
+KX Wave is a Flutter Android music streaming app built incrementally. This repository currently contains **v1.0.2 Data Import**.
 
 ## Phase 1 Foundation
 
@@ -148,6 +148,15 @@ Included:
 - Working Artists and Albums Library filters
 - Playback control error handling
 
+## v1.0.2 Data Import
+
+Included:
+
+- Spotify data export import without OAuth
+- JSON, CSV, and TXT import from the Spotify Sync screen
+- Support for streaming history, extended history, playlists, and library-style files
+- Imported taste profile reuse for AI Discovery recommendations
+
 ## Not Included Yet
 
 - Play Store publishing automation
@@ -224,7 +233,7 @@ flutter build apk --debug `
 Create a Spotify developer app and add this redirect URI:
 
 ```text
-kxwave://spotify-auth
+https://kxwave.app/spotify-auth
 ```
 
 Build or run with:
@@ -232,7 +241,7 @@ Build or run with:
 ```powershell
 flutter build apk --debug `
   --dart-define=SPOTIFY_CLIENT_ID="your-spotify-client-id" `
-  --dart-define=SPOTIFY_REDIRECT_URI="kxwave://spotify-auth"
+  --dart-define=SPOTIFY_REDIRECT_URI="https://kxwave.app/spotify-auth"
 ```
 
 KX Wave uses Spotify only to analyze listening taste. Playback still comes from legal/open sources already integrated in the app.
@@ -272,7 +281,7 @@ On this Windows workspace, a helper script is available:
 It also copies the APK to:
 
 ```text
-dist/kx-wave-v1.0.1-qa-fix-debug.apk
+dist/kx-wave-v1.0.2-data-import-debug.apk
 ```
 
 ## Build Release APK and AAB
@@ -292,8 +301,8 @@ Build release artifacts:
 Outputs:
 
 ```text
-dist/kx-wave-v1.0.1-qa-fix-release.apk
-dist/kx-wave-v1.0.1-qa-fix-release.aab
+dist/kx-wave-v1.0.2-data-import-release.apk
+dist/kx-wave-v1.0.2-data-import-release.aab
 ```
 
 ## GitHub Actions
@@ -309,6 +318,12 @@ The workflow at `.github/workflows/android-apk.yml` runs:
 ## Versioning
 
 Latest tag:
+
+```text
+v1.0.2-data-import
+```
+
+Previous QA fix tag:
 
 ```text
 v1.0.1-qa-fix

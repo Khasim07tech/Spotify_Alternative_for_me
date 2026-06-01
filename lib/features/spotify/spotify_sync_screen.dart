@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_links/app_links.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,7 +49,10 @@ class _SpotifySyncScreenState extends ConsumerState<SpotifySyncScreen> {
   }
 
   void _handleSpotifyCallback(Uri uri) {
-    if (uri.scheme != 'kxwave' || uri.host != 'spotify-auth') {
+    final isLegacyAppLink = uri.scheme == 'kxwave' && uri.host == 'spotify-auth';
+    final isHttpsRedirect =
+        uri.scheme == 'https' && uri.host == 'kxwave.app' && uri.path == '/spotify-auth';
+    if (!isLegacyAppLink && !isHttpsRedirect) {
       return;
     }
     final code = uri.queryParameters['code'];
@@ -163,6 +168,11 @@ class _SpotifySyncScreenState extends ConsumerState<SpotifySyncScreen> {
                   icon: const Icon(Icons.sync_rounded),
                   label: const Text('Sync Taste'),
                 ),
+                OutlinedButton.icon(
+                  onPressed: state.isLoading ? null : () => _importDataFile(controller),
+                  icon: const Icon(Icons.upload_file_rounded),
+                  label: const Text('Import Data File'),
+                ),
                 IconButton.filledTonal(
                   tooltip: 'Disconnect Spotify',
                   onPressed: state.isLoading ? null : controller.disconnect,
@@ -209,6 +219,19 @@ class _SpotifySyncScreenState extends ConsumerState<SpotifySyncScreen> {
     final hour = local.hour.toString().padLeft(2, '0');
     final minute = local.minute.toString().padLeft(2, '0');
     return '${local.year}-$month-$day $hour:$minute';
+  }
+
+  Future<void> _importDataFile(SpotifySyncNotifier controller) async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['json', 'csv', 'txt'],
+      allowMultiple: false,
+    );
+    final path = result?.files.single.path;
+    if (path == null || path.isEmpty) {
+      return;
+    }
+    await controller.importFile(File(path));
   }
 }
 

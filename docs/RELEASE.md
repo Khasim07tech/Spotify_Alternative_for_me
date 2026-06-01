@@ -48,7 +48,7 @@ firebase deploy --only firestore:rules,storage
 
 - Configure real Firebase Android values through `--dart-define`.
 - Add Google sign-in SHA-1/SHA-256 fingerprints.
-- Configure Spotify redirect URI `kxwave://spotify-auth`.
+- Configure Spotify redirect URI `https://kxwave.app/spotify-auth`.
 - Add Jamendo client id for Creative Commons search.
 - Test playback on a physical Android device.
 - Keep Spotify for analytics only; never stream Spotify audio.

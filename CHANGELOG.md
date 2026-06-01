@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 - Data Import
+
+- Added Spotify data export import without OAuth or Client ID.
+- Supports JSON, CSV, and TXT taste files.
+- Converts imported tracks, artists, playlists, and recent listening history into KX recommendations.
+
 ## 1.0.1 - QA Fix
 
 - Made Home songs playable offline with bundled KX audio demo loops.

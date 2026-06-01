@@ -37,11 +37,11 @@ try {
   $distDir = Join-Path $projectRoot "dist"
   New-Item -ItemType Directory -Force -Path $distDir | Out-Null
   Copy-Item -Force (Join-Path $executionRoot "build/app/outputs/flutter-apk/app-release.apk") `
-    (Join-Path $distDir "kx-wave-v1.0.1-qa-fix-release.apk")
+    (Join-Path $distDir "kx-wave-v1.0.2-data-import-release.apk")
   Copy-Item -Force (Join-Path $executionRoot "build/app/outputs/bundle/release/app-release.aab") `
-    (Join-Path $distDir "kx-wave-v1.0.1-qa-fix-release.aab")
-  Write-Host "Release APK: $distDir/kx-wave-v1.0.1-qa-fix-release.apk"
-  Write-Host "Release AAB: $distDir/kx-wave-v1.0.1-qa-fix-release.aab"
+    (Join-Path $distDir "kx-wave-v1.0.2-data-import-release.aab")
+  Write-Host "Release APK: $distDir/kx-wave-v1.0.2-data-import-release.apk"
+  Write-Host "Release AAB: $distDir/kx-wave-v1.0.2-data-import-release.aab"
 } finally {
   Pop-Location
 }
